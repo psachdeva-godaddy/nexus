@@ -57,6 +57,49 @@ const BookingService = ({ service, onBack, onAddToCart }) => {
     }
   }
 
+  // Helper function to format service state clearly
+  const formatServiceState = (stateValue) => {
+    if (typeof stateValue === 'string') {
+      return stateValue
+    }
+    
+    if (typeof stateValue === 'object' && stateValue !== null) {
+      const keys = Object.keys(stateValue)
+      if (keys.length === 1) {
+        const provider = keys[0]
+        const providerState = stateValue[provider]
+        if (typeof providerState === 'string') {
+          // Enhanced display for browsing state
+          if (providerState === 'browsing') {
+            return `${provider}.browsing → Browse Items Machine`
+          }
+          return `${provider}.${providerState}`
+        } else if (typeof providerState === 'object') {
+          const subKeys = Object.keys(providerState)
+          if (subKeys.length === 1) {
+            return `${provider}.${subKeys[0]}`
+          }
+        }
+      }
+    }
+    
+    return JSON.stringify(stateValue)
+  }
+
+  // Get state color for service-specific states
+  const getServiceStateColor = () => {
+    const stateStr = state.value.toString()
+    
+    if (state.matches('selectingProvider')) return 'bg-purple-500'
+    if (stateStr.includes('idle')) return 'bg-gray-500'
+    if (stateStr.includes('browsing')) return 'bg-pink-500 animate-pulse'
+    if (stateStr.includes('processing')) return 'bg-yellow-500'
+    if (stateStr.includes('completed')) return 'bg-green-500'
+    if (stateStr.includes('cancelled')) return 'bg-red-500'
+    
+    return 'bg-blue-500'
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
@@ -68,9 +111,12 @@ const BookingService = ({ service, onBack, onAddToCart }) => {
             <h2 className="text-2xl font-bold text-gray-800">
               {config.title}
             </h2>
-            <p className="text-sm text-gray-500">
-              Current State: {state.value.toString()}
-            </p>
+            <div className="flex items-center space-x-2">
+              <div className={`w-2 h-2 rounded-full ${getServiceStateColor()}`}></div>
+              <p className="text-sm text-gray-600 font-medium">
+                {formatServiceState(state.value)}
+              </p>
+            </div>
           </div>
         </div>
         <button

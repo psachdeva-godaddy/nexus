@@ -1,5 +1,6 @@
 import React from 'react'
 import ItemsList from './ItemsList'
+import BrowseItems from './BrowseItems'
 
 const providerNames = {
   // Food providers
@@ -71,11 +72,10 @@ const BookingFlow = ({ service, provider, state, send, onAddToCart }) => {
         )}
 
         {currentState === 'browsing' && (
-          <ItemsList
+          <BrowseItems
             service={service}
             provider={provider}
             onAddToCart={onAddToCart}
-            onStartBooking={() => send('START_BOOKING')}
           />
         )}
 

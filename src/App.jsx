@@ -29,6 +29,67 @@ function App() {
     send('REMOVE_FROM_CART', { itemId })
   }
 
+  // Helper function to display nested state paths clearly
+  const formatStateValue = (stateValue) => {
+    if (typeof stateValue === 'string') {
+      return stateValue
+    }
+    
+    if (typeof stateValue === 'object' && stateValue !== null) {
+      const keys = Object.keys(stateValue)
+      if (keys.length === 1) {
+        const key = keys[0]
+        const nestedValue = stateValue[key]
+        if (typeof nestedValue === 'string') {
+          return `${key}.${nestedValue}`
+        } else if (typeof nestedValue === 'object') {
+          return `${key}.${formatStateValue(nestedValue)}`
+        }
+      }
+    }
+    
+    return JSON.stringify(stateValue)
+  }
+
+  // Get current state with service-specific state if available
+  const getCurrentStateDisplay = () => {
+    const mainState = formatStateValue(state.value)
+    
+    // If we're in a service booking state, also show the service-specific state
+    if (state.context.selectedService) {
+      const serviceType = state.context.selectedService
+      
+      // Check if we're in a browsing flow
+      if (mainState.includes('Booking')) {
+        return `${mainState} (${serviceType}) → Browse Items Active`
+      }
+      
+      return `${mainState} (${serviceType})`
+    }
+    
+    return mainState
+  }
+
+  // Get state color based on current state
+  const getStateColor = () => {
+    const stateStr = state.value.toString()
+    
+    if (stateStr.includes('selectingService')) return 'bg-blue-500'
+    if (stateStr.includes('selectingProvider')) return 'bg-purple-500'
+    if (stateStr.includes('idle')) return 'bg-gray-500'
+    if (stateStr.includes('browsing')) return 'bg-indigo-500'
+    if (stateStr.includes('processing')) return 'bg-yellow-500'
+    if (stateStr.includes('completed')) return 'bg-green-500'
+    if (stateStr.includes('cancelled')) return 'bg-red-500'
+    
+    // Special color for when we're in a service booking flow
+    if (state.context.selectedService && stateStr.includes('Booking')) {
+      return 'bg-pink-500'
+    }
+    
+    return 'bg-blue-500'
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="container mx-auto px-4 py-8">
@@ -45,10 +106,16 @@ function App() {
           <div className="bg-white rounded-2xl shadow-xl p-8">
             <div className="flex justify-between items-center mb-8">
               <div className="flex items-center space-x-4">
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                <span className="text-sm font-medium text-gray-500">
-                  Current State: {state.value.toString()}
-                </span>
+                <div className={`w-3 h-3 rounded-full ${getStateColor()}`}></div>
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium text-gray-700">
+                    Current State: {getCurrentStateDisplay()}
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    Cart: {state.context.cart.length} items (${state.context.totalAmount.toFixed(2)})
+                    {state.context.selectedService && ' • Browse Items Machine Active'}
+                  </span>
+                </div>
               </div>
               <div className="flex items-center space-x-4">
                 <button

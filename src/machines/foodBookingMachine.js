@@ -1,7 +1,11 @@
-import { createMachine } from "xstate";
+import { createMachine, assign } from "xstate";
+import { browseItemsMachine } from "./browseItemsMachine";
 
 export const foodBookingMachine = createMachine({
-  context: {},
+  context: {
+    currentProvider: null,
+    browseData: null,
+  },
   id: "foodBookingMachine",
   initial: "selectingProvider",
   states: {
@@ -9,12 +13,24 @@ export const foodBookingMachine = createMachine({
       on: {
         SELECT_SWIGGY: {
           target: "swiggy",
+          actions: assign({ 
+            currentProvider: "swiggy",
+            browseData: null 
+          }),
         },
         SELECT_ZOMATO: {
           target: "zomato",
+          actions: assign({ 
+            currentProvider: "zomato",
+            browseData: null 
+          }),
         },
         SELECT_UBEREATS: {
           target: "ubereats",
+          actions: assign({ 
+            currentProvider: "ubereats",
+            browseData: null 
+          }),
         },
       },
     },
@@ -34,10 +50,21 @@ export const foodBookingMachine = createMachine({
           },
         },
         browsing: {
+          invoke: {
+            id: 'browseItems',
+            src: browseItemsMachine,
+            data: (context) => ({
+              currentService: 'food',
+              currentProvider: context.currentProvider,
+            }),
+            onDone: {
+              target: 'processing',
+              actions: assign({
+                browseData: (context, event) => event.data
+              })
+            }
+          },
           on: {
-            START_BOOKING: {
-              target: "processing",
-            },
             BACK_TO_IDLE: {
               target: "idle",
             },
