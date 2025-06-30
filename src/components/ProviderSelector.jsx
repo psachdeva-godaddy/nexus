@@ -41,7 +41,7 @@ const ProviderSelector = ({ service, send }) => {
           <div
             key={provider.id}
             className="bg-white border-2 border-gray-200 rounded-xl p-8 hover:border-gray-300 hover:shadow-lg transition-all duration-300 cursor-pointer group"
-            onClick={() => send(provider.action)}
+            onClick={() => send({ type: provider.action })}
           >
             <div className="flex flex-col items-center text-center">
               <div className={`w-20 h-20 ${provider.color} rounded-full flex items-center justify-center text-3xl mb-4 group-hover:scale-110 transition-transform duration-300`}>

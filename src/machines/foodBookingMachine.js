@@ -1,7 +1,11 @@
-import { createMachine, assign } from "xstate";
+import { setup, assign } from "xstate";
 import { browseItemsMachine } from "./browseItemsMachine";
 
-export const foodBookingMachine = createMachine({
+export const foodBookingMachine = setup({
+  actors: {
+    browseItems: browseItemsMachine,
+  },
+}).createMachine({
   context: {
     currentProvider: null,
     browseData: null,
@@ -52,15 +56,15 @@ export const foodBookingMachine = createMachine({
         browsing: {
           invoke: {
             id: 'browseItems',
-            src: browseItemsMachine,
-            data: (context) => ({
+            src: 'browseItems',
+            input: ({ context }) => ({
               currentService: 'food',
               currentProvider: context.currentProvider,
             }),
             onDone: {
               target: 'processing',
               actions: assign({
-                browseData: (context, event) => event.data
+                browseData: ({ event }) => event.output
               })
             }
           },

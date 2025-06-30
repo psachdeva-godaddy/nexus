@@ -63,7 +63,7 @@ const BookingFlow = ({ service, provider, state, send, onAddToCart }) => {
               Ready to browse {providerName} offerings
             </p>
             <button
-              onClick={() => send('BROWSE_ITEMS')}
+              onClick={() => send({ type: 'BROWSE_ITEMS' })}
               className="w-full py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-semibold text-lg"
             >
               Browse Items
@@ -89,13 +89,13 @@ const BookingFlow = ({ service, provider, state, send, onAddToCart }) => {
             </p>
             <div className="flex space-x-4">
               <button
-                onClick={() => send('CONFIRM_BOOKING')}
+                onClick={() => send({ type: 'CONFIRM_BOOKING' })}
                 className="flex-1 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 font-semibold"
               >
                 Confirm Booking
               </button>
               <button
-                onClick={() => send('CANCEL_BOOKING')}
+                onClick={() => send({ type: 'CANCEL_BOOKING' })}
                 className="flex-1 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 font-semibold"
               >
                 Cancel Booking
@@ -126,7 +126,7 @@ const BookingFlow = ({ service, provider, state, send, onAddToCart }) => {
               Your booking with {providerName} has been cancelled.
             </p>
             <button
-              onClick={() => send('START_BOOKING')}
+              onClick={() => send({ type: 'START_BOOKING' })}
               className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-semibold"
             >
               Browse More Items

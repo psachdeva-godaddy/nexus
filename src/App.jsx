@@ -10,23 +10,23 @@ function App() {
   const [showCart, setShowCart] = useState(false)
 
   const handleReset = () => {
-    send('RESET')
+    send({ type: 'RESET' })
   }
 
   const handleAddToCart = (item) => {
-    send('ADD_TO_CART', { item })
+    send({ type: 'ADD_TO_CART', item })
   }
 
   const handleUpdateCartQuantity = (itemId, quantity) => {
     if (quantity <= 0) {
-      send('REMOVE_FROM_CART', { itemId })
+      send({ type: 'REMOVE_FROM_CART', itemId })
     } else {
-      send('UPDATE_CART_QUANTITY', { itemId, quantity })
+      send({ type: 'UPDATE_CART_QUANTITY', itemId, quantity })
     }
   }
 
   const handleRemoveFromCart = (itemId) => {
-    send('REMOVE_FROM_CART', { itemId })
+    send({ type: 'REMOVE_FROM_CART', itemId })
   }
 
   // Helper function to display nested state paths clearly
@@ -150,7 +150,7 @@ function App() {
               state.matches('queryingBooking.travelBooking')) && (
               <BookingService 
                 service={state.context.selectedService} 
-                onBack={() => send('BACK')}
+                onBack={() => send({ type: 'BACK' })}
                 onAddToCart={handleAddToCart}
               />
             )}

@@ -1,15 +1,15 @@
-import { createMachine, assign } from 'xstate'
+import { setup, assign } from 'xstate'
 
-export const browseItemsMachine = createMachine({
-  context: {
+export const browseItemsMachine = setup({}).createMachine({
+  context: ({ input }) => ({
     selectedItems: [],
     totalAmount: 0,
     searchQuery: '',
     selectedCategory: 'all',
-    currentService: null,
-    currentProvider: null,
+    currentService: input?.currentService || null,
+    currentProvider: input?.currentProvider || null,
     availableItems: [],
-  },
+  }),
   id: 'browseItemsMachine',
   initial: 'loading',
   states: {
@@ -28,7 +28,7 @@ export const browseItemsMachine = createMachine({
       on: {
         ADD_ITEM: {
           actions: assign({
-            selectedItems: (context, event) => {
+            selectedItems: ({ context, event }) => {
               const existingItem = context.selectedItems.find(
                 item => item.id === event.item.id
               )
@@ -43,7 +43,7 @@ export const browseItemsMachine = createMachine({
               
               return [...context.selectedItems, { ...event.item, quantity: 1 }]
             },
-            totalAmount: (context, event) => {
+            totalAmount: ({ context, event }) => {
               const existingItem = context.selectedItems.find(
                 item => item.id === event.item.id
               )
@@ -58,10 +58,10 @@ export const browseItemsMachine = createMachine({
         },
         REMOVE_ITEM: {
           actions: assign({
-            selectedItems: (context, event) => {
+            selectedItems: ({ context, event }) => {
               return context.selectedItems.filter(item => item.id !== event.itemId)
             },
-            totalAmount: (context, event) => {
+            totalAmount: ({ context, event }) => {
               const item = context.selectedItems.find(item => item.id === event.itemId)
               return context.totalAmount - (item ? item.price * item.quantity : 0)
             }
@@ -69,7 +69,7 @@ export const browseItemsMachine = createMachine({
         },
         UPDATE_QUANTITY: {
           actions: assign({
-            selectedItems: (context, event) => {
+            selectedItems: ({ context, event }) => {
               if (event.quantity <= 0) {
                 return context.selectedItems.filter(item => item.id !== event.itemId)
               }
@@ -80,7 +80,7 @@ export const browseItemsMachine = createMachine({
                   : item
               )
             },
-            totalAmount: (context, event) => {
+            totalAmount: ({ context, event }) => {
               const item = context.selectedItems.find(item => item.id === event.itemId)
               if (item) {
                 const oldTotal = item.price * item.quantity
@@ -93,12 +93,12 @@ export const browseItemsMachine = createMachine({
         },
         SEARCH: {
           actions: assign({
-            searchQuery: (context, event) => event.query
+            searchQuery: ({ event }) => event.query
           })
         },
         FILTER_CATEGORY: {
           actions: assign({
-            selectedCategory: (context, event) => event.category
+            selectedCategory: ({ event }) => event.category
           })
         },
         CLEAR_CART: {
@@ -109,7 +109,7 @@ export const browseItemsMachine = createMachine({
         },
         PROCEED_TO_CHECKOUT: {
           target: 'checkout',
-          cond: (context) => context.selectedItems.length > 0
+          guard: ({ context }) => context.selectedItems.length > 0
         }
       }
     },
@@ -130,7 +130,7 @@ export const browseItemsMachine = createMachine({
         },
         completed: {
           type: 'final',
-          data: (context) => ({
+          output: ({ context }) => ({
             selectedItems: context.selectedItems,
             totalAmount: context.totalAmount,
             service: context.currentService,

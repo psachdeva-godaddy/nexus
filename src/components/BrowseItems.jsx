@@ -122,7 +122,7 @@ const ItemCard = ({ item, service, selectedItems, onAddItem, onUpdateQuantity })
 
 const BrowseItems = ({ service, provider, onAddToCart }) => {
   const [state, send] = useMachine(browseItemsMachine, {
-    context: {
+    input: {
       currentService: service,
       currentProvider: provider,
     }
@@ -142,22 +142,22 @@ const BrowseItems = ({ service, provider, onAddToCart }) => {
   })
 
   const handleAddItem = (item) => {
-    send('ADD_ITEM', { item })
+    send({ type: 'ADD_ITEM', item })
     if (onAddToCart) {
       onAddToCart(item)
     }
   }
 
   const handleUpdateQuantity = (itemId, quantity) => {
-    send('UPDATE_QUANTITY', { itemId, quantity })
+    send({ type: 'UPDATE_QUANTITY', itemId, quantity })
   }
 
   const handleSearch = (query) => {
-    send('SEARCH', { query })
+    send({ type: 'SEARCH', query })
   }
 
   const handleProceedToCheckout = () => {
-    send('PROCEED_TO_CHECKOUT')
+    send({ type: 'PROCEED_TO_CHECKOUT' })
   }
 
   if (state.matches('loading')) {
@@ -196,13 +196,13 @@ const BrowseItems = ({ service, provider, onAddToCart }) => {
           
           <div className="flex space-x-4">
             <button
-              onClick={() => send('EDIT_ORDER')}
+              onClick={() => send({ type: 'EDIT_ORDER' })}
               className="flex-1 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200 font-medium"
             >
               Edit Order
             </button>
             <button
-              onClick={() => send('CONFIRM_ORDER')}
+              onClick={() => send({ type: 'CONFIRM_ORDER' })}
               className="flex-1 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 font-medium"
             >
               Confirm Order

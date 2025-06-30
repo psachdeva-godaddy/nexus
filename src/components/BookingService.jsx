@@ -53,7 +53,7 @@ const BookingService = ({ service, onBack, onAddToCart }) => {
     if (state.matches('selectingProvider')) {
       onBack()
     } else {
-      send('BACK')
+      send({ type: 'BACK' })
     }
   }
 

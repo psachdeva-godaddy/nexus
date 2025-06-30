@@ -54,7 +54,7 @@ const ServiceSelector = ({ send }) => {
           <div
             key={service.id}
             className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-gray-300 hover:shadow-lg transition-all duration-300 cursor-pointer group"
-            onClick={() => send(service.action)}
+            onClick={() => send({ type: service.action })}
           >
             <div className="flex flex-col items-center text-center">
               <div className={`w-16 h-16 ${service.color} rounded-full flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform duration-300`}>

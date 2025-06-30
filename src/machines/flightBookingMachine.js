@@ -1,6 +1,6 @@
-import { createMachine } from "xstate";
+import { setup } from "xstate";
 
-export const flightBookingMachine = createMachine({
+export const flightBookingMachine = setup({}).createMachine({
   context: {},
   id: "flightBookingMachine",
   initial: "selectingProvider",

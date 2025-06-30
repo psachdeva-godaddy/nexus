@@ -1,6 +1,6 @@
-import { createMachine, assign } from "xstate";
+import { setup, assign } from "xstate";
 
-export const bookingMachine = createMachine({
+export const bookingMachine = setup({}).createMachine({
   context: {
     cart: [],
     totalAmount: 0,
@@ -9,7 +9,7 @@ export const bookingMachine = createMachine({
   initial: "queryingBooking",
   on: {
     RESET: {
-      target: "#bookingMachine.queryingBooking",
+      target: ".queryingBooking.selectingService",
       actions: assign({
         error: undefined,
         bookingDetails: undefined,
@@ -21,7 +21,7 @@ export const bookingMachine = createMachine({
     },
     ADD_TO_CART: {
       actions: assign({
-        cart: (context, event) => {
+        cart: ({ context, event }) => {
           const existingItem = context.cart.find(item => item.id === event.item.id);
           if (existingItem) {
             return context.cart.map(item =>
@@ -32,7 +32,7 @@ export const bookingMachine = createMachine({
           }
           return [...context.cart, { ...event.item, quantity: 1 }];
         },
-        totalAmount: (context, event) => {
+        totalAmount: ({ context, event }) => {
           const existingItem = context.cart.find(item => item.id === event.item.id);
           if (existingItem) {
             return context.totalAmount + event.item.price;
@@ -43,10 +43,10 @@ export const bookingMachine = createMachine({
     },
     REMOVE_FROM_CART: {
       actions: assign({
-        cart: (context, event) => {
+        cart: ({ context, event }) => {
           return context.cart.filter(item => item.id !== event.itemId);
         },
-        totalAmount: (context, event) => {
+        totalAmount: ({ context, event }) => {
           const item = context.cart.find(item => item.id === event.itemId);
           return context.totalAmount - (item ? item.price * item.quantity : 0);
         },
@@ -54,14 +54,14 @@ export const bookingMachine = createMachine({
     },
     UPDATE_CART_QUANTITY: {
       actions: assign({
-        cart: (context, event) => {
+        cart: ({ context, event }) => {
           return context.cart.map(item =>
             item.id === event.itemId
               ? { ...item, quantity: event.quantity }
               : item
           );
         },
-        totalAmount: (context, event) => {
+        totalAmount: ({ context, event }) => {
           const item = context.cart.find(item => item.id === event.itemId);
           if (item) {
             const oldTotal = item.price * item.quantity;
